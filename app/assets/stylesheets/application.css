@@ -8,3 +8,18 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+/* Tailwind v4 (Rails 8 / tailwindcss-rails 4). Merge the @theme block into your existing file. */
+@import "tailwindcss";
+
+@theme {
+    --color-brand: #C8102E;       /* SellAfrica red */
+    --color-brand-dark: #A00D25;
+    --color-ink: #18191B;         /* logo black */
+    --color-gold: #F5C518;        /* logo yellow */
+    --color-sand-50: #FAF8F4;     /* page background */
+    --color-sand-100: #F4F0E8;
+    --color-sand-200: #ECE7DD;
+
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+}

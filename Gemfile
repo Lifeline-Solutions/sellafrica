@@ -69,7 +69,7 @@ end
 
 gem 'cancancan'
 gem 'chunky_png'
-gem 'devise', '~> 5.0'
+gem 'devise'
 gem 'devise_invitable'
 gem 'dotenv'
 gem 'json', '< 3.0'

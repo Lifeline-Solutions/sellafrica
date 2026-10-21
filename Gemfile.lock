@@ -453,7 +453,7 @@ DEPENDENCIES
   capybara
   chunky_png
   debug
-  devise (~> 5.0)
+  devise
   devise_invitable
   dotenv
   image_processing (~> 1.2)
