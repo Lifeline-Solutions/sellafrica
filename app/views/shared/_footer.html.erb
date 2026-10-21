@@ -1,0 +1,63 @@
+<footer class="bg-[#141416] text-zinc-300">
+  <div class="mx-auto flex max-w-7xl flex-col gap-12 px-4 pb-10 pt-14 sm:px-6 lg:flex-row lg:justify-between lg:px-8">
+
+    <!-- Brand + newsletter -->
+    <div class="flex flex-col gap-5 lg:max-w-sm">
+      <a href="/" aria-label="SellAfrica home" class="self-start">
+        <%= image_tag "sellafrica-logo-dark.png", alt: "SellAfrica", class: "h-10 w-auto" %>
+      </a>
+      <p class="text-[15px] leading-relaxed">The marketplace for African makers, brands and the people who love them.</p>
+
+      <form action="/newsletter_subscriptions" method="post" class="flex flex-col gap-2">
+        <label for="newsletter_email" class="text-sm font-semibold text-white">Get new drops and deals by email</label>
+        <div class="flex gap-2">
+          <input id="newsletter_email" name="email" type="email" required autocomplete="email" placeholder="you@example.com"
+                 class="h-12 min-w-0 flex-1 rounded-xl border border-zinc-700 bg-[#1F2023] px-4 text-[15px] text-white placeholder:text-zinc-500 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold">
+          <button type="submit" class="h-12 shrink-0 rounded-xl bg-gold px-5 text-sm font-bold text-ink transition hover:brightness-95">
+            Subscribe
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Link columns: 2 per row on phones, 4 on tablet+ -->
+    <div class="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:w-[58%]">
+      <nav aria-labelledby="f-shop" class="flex flex-col gap-3 text-sm">
+        <h3 id="f-shop" class="text-[15px] font-bold text-white">Shop</h3>
+        <a href="#" class="transition hover:text-white">Today's deals</a>
+        <a href="#" class="transition hover:text-white">New arrivals</a>
+        <a href="#" class="transition hover:text-white">Shop by country</a>
+        <a href="#" class="transition hover:text-white">Gift cards</a>
+      </nav>
+      <nav aria-labelledby="f-sell" class="flex flex-col gap-3 text-sm">
+        <h3 id="f-sell" class="text-[15px] font-bold text-white">Sell</h3>
+        <a href="#" class="transition hover:text-white">Open a shop</a>
+        <a href="#" class="transition hover:text-white">Seller fees</a>
+        <a href="#" class="transition hover:text-white">Seller app</a>
+        <a href="#" class="transition hover:text-white">Seller help</a>
+      </nav>
+      <nav aria-labelledby="f-help" class="flex flex-col gap-3 text-sm">
+        <h3 id="f-help" class="text-[15px] font-bold text-white">Help</h3>
+        <a href="#" class="transition hover:text-white">Track my order</a>
+        <a href="#" class="transition hover:text-white">Delivery</a>
+        <a href="#" class="transition hover:text-white">Returns</a>
+        <a href="#" class="transition hover:text-white">Contact us</a>
+      </nav>
+      <nav aria-labelledby="f-company" class="flex flex-col gap-3 text-sm">
+        <h3 id="f-company" class="text-[15px] font-bold text-white">Company</h3>
+        <a href="#" class="transition hover:text-white">About</a>
+        <a href="#" class="transition hover:text-white">Careers</a>
+        <a href="#" class="transition hover:text-white">Press</a>
+        <a href="#" class="transition hover:text-white">Terms &amp; privacy</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-zinc-800">
+    <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-[13px] sm:flex-row sm:justify-between sm:px-6 lg:px-8">
+      <span>© 2026 SellAfrica. All rights reserved.</span>
+      <span>M-Pesa · Airtel Money · Visa · Mastercard · Cash on delivery</span>
+    </div>
+  </div>
+</footer>
