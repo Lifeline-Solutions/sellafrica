@@ -6,10 +6,16 @@
       true,
       {
         "ignoreAtRules": [
+          "theme",
+          "source",
+          "utility",
+          "variant",
+          "custom-variant",
+          "plugin",
+          "config",
           "tailwind",
           "apply",
-          "variants",
-          "responsive",
+          "layer",
           "screen"
         ]
       }
@@ -18,12 +24,17 @@
       true,
       {
         "ignoreAtRules": [
+          "theme",
+          "source",
+          "utility",
+          "variant",
+          "custom-variant",
+          "plugin",
+          "config",
           "tailwind",
           "apply",
-          "variants",
-          "responsive",
-          "screen",
-          "layer"
+          "layer",
+          "screen"
         ]
       }
     ],
