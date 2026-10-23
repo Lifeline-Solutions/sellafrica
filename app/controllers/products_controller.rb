@@ -6,7 +6,13 @@ class ProductsController < ApplicationController
 
     scope = Product.all
 
-    scope = scope.where(product_type: @category) if @category.present? && Product::CATEGORIES.key?(@category) && Product.column_names.include?('product_type')
+    if @category.present? && Product::CATEGORIES.key?(@category)
+      if Product.column_names.include?('category')
+        scope = scope.where(category: @category)
+      elsif Product.column_names.include?('product_type')
+        scope = scope.where(product_type: @category)
+      end
+    end
 
     scope = scope.where('name ILIKE :q OR description ILIKE :q', q: "%#{@query}%") if @query.present?
 
@@ -71,6 +77,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :description, :price, :color, :product_type, :stock, :active, images: [])
+    params.require(:product).permit(:name, :description, :price, :color, :category, :product_type, :stock, :active, images: [])
   end
 end

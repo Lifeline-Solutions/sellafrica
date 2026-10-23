@@ -28,6 +28,13 @@
         </div>
 
         <div>
+          <%= f.label :category, "Category", class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <%= f.select :category, options_for_select(Product::CATEGORIES.invert, product.category),
+                       { prompt: "Select a category" },
+                       class: "w-full rounded-xl border-2 border-sand-200 bg-white px-4 py-3 text-ink focus:border-ink focus:ring-0" %>
+        </div>
+
+        <div>
           <%= f.label :description, class: "mb-1.5 block text-sm font-bold text-ink" %>
           <%= f.text_area :description, rows: 6,
                           placeholder: "What is it made of, who made it, size, how to care for it…",

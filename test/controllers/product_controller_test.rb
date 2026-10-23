@@ -22,9 +22,20 @@ class ProductControllerTest < ActionDispatch::IntegrationTest
   test 'should get new' do
     get new_product_url
     assert_response :success
+    assert_select 'select[name="product[category]"]' do
+      assert_select 'option[value="fashion"]', text: 'Fashion'
+      assert_select 'option[value="home-living"]', text: 'Home & Living'
+    end
   end
 
-  test 'should create product with uploaded images' do
+  test 'should get edit' do
+    product = products(:one)
+    get edit_product_url(product)
+    assert_response :success
+    assert_select 'select[name="product[category]"]'
+  end
+
+  test 'should create product with category and uploaded images' do
     image = fixture_file_upload(@image_path, 'image/png')
 
     assert_difference('Product.count', 1) do
@@ -34,6 +45,7 @@ class ProductControllerTest < ActionDispatch::IntegrationTest
           description: 'Woven palm leaf basket',
           price: 1500,
           color: 'natural',
+          category: 'fashion',
           images: [image]
         }
       }
@@ -43,6 +55,7 @@ class ProductControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(product)
     assert_equal 1, product.images.count, 'Product images should be attached'
     assert_equal 'Handmade Basket', product.name
+    assert_equal 'fashion', product.category
   end
 
   test 'should show product' do
@@ -65,7 +78,8 @@ class ProductControllerTest < ActionDispatch::IntegrationTest
       product: {
         name: 'Updated Basket',
         description: 'Updated description',
-        price: 1800
+        price: 1800,
+        category: 'home-living'
       },
       remove_image_ids: [attached_image.id]
     }
@@ -73,6 +87,7 @@ class ProductControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(product)
     product.reload
     assert_equal 'Updated Basket', product.name
+    assert_equal 'home-living', product.category
     assert_equal 0, product.images.count
   end
 end

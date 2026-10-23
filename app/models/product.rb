@@ -7,6 +7,7 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :description, presence: true
   validates :price, presence: true, numericality: { greater_than: 0 }
+  validates :category, inclusion: { in: ->(_) { CATEGORIES.keys } }, allow_blank: true
 
   CATEGORIES = {
     'fashion' => 'Fashion',
@@ -23,6 +24,10 @@ class Product < ApplicationRecord
     'price_desc' => 'Price: High to low',
     'name_asc' => 'Name: A to Z'
   }.freeze
+
+  def category_name
+    CATEGORIES[category]
+  end
 
   def new_arrival?
     created_at.present? && created_at >= 14.days.ago
