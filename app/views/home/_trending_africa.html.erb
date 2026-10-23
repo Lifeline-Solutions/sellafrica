@@ -5,21 +5,18 @@
     <h2 id="trending-heading" class="font-display text-2xl font-extrabold tracking-tight text-ink sm:text-4xl">
       Trending across Africa
     </h2>
-
     <nav aria-label="Filter products" class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-      <a href="?filter=all" aria-current="true"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-ink bg-ink px-5 text-sm font-semibold text-white">All</a>
-      <a href="?filter=fashion"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Fashion</a>
-      <a href="?filter=home-living"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Home</a>
-      <a href="?filter=beauty"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Beauty</a>
-      <a href="?filter=food-pantry"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Food</a>
-      <a href="?filter=art-crafts"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Crafts</a>
+      <% chip = "flex h-10 shrink-0 items-center rounded-full border-[1.5px] px-5 text-sm font-semibold" %>
+      <% on = "border-ink bg-ink text-white" %>
+      <% off = "border-sand-200 bg-white text-ink hover:border-ink" %>
+      <%= link_to "All", products_path(q: @query.presence, sort: (@sort unless @sort == "newest")),
+                  class: "#{chip} #{@category ? off : on}", aria: { current: (@category ? nil : "page") } %>
+      <% Product::CATEGORIES.each do |slug, name| %>
+        <%= link_to name, products_path(category: slug, q: @query.presence, sort: (@sort unless @sort == "newest")),
+                    class: "#{chip} #{@category == slug ? on : off}", aria: { current: (@category == slug ? "page" : nil) } %>
+      <% end %>
     </nav>
+
   </div>
 
   <!-- Product grid: 2 per row on phones, 3 on tablets, 4 on desktop -->
