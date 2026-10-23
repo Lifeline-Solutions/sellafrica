@@ -14,5 +14,6 @@ Rails.application.routes.draw do
   # root "posts#index"
   root "home#index"
   resources :home
-  resources :product
+  resources :products
+
 end

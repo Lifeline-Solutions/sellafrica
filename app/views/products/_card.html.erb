@@ -1,0 +1,41 @@
+<%# One product in a grid. Same look as the "Trending across Africa" cards on the home page. %>
+<% placeholders = %w[bg-[#E6D3AE] bg-[#F2C29A] bg-[#EFE4CC] bg-[#E4D9D0] bg-[#FCEFC7] bg-[#D9DEF0]] %>
+<article class="group flex flex-col gap-3">
+  <div class="relative transition-transform duration-200 group-hover:-translate-y-1">
+    <%= link_to product, aria: { label: product.name },
+                class: "block aspect-square overflow-hidden rounded-3xl #{product.images.attached? ? "bg-white" : placeholders[product.id.to_s.hash.abs % placeholders.size]}" do %>
+      <% if product.images.attached? %>
+        <%= image_tag product.images.first, alt: "", loading: "lazy", class: "size-full object-cover" %>
+      <% end %>
+    <% end %>
+
+    <% if product.respond_to?(:new_arrival?) && product.new_arrival? %>
+      <span class="absolute left-3 top-3 rounded-lg bg-ink px-2.5 py-1 text-xs font-extrabold text-gold">New</span>
+    <% elsif product.respond_to?(:stock) && product.stock.to_i <= 3 && product.stock.to_i > 0 %>
+      <span class="absolute left-3 top-3 rounded-lg bg-brand px-2.5 py-1 text-xs font-extrabold text-white">Only <%= product.stock %> left</span>
+    <% end %>
+  </div>
+
+  <div class="flex flex-col gap-1 px-0.5">
+    <span class="text-xs text-zinc-600 sm:text-[13px]"><%= product.respond_to?(:shop) && product.shop ? product.shop.business_name : "SellAfrica Seller" %></span>
+    <%= link_to product.name, product, class: "line-clamp-2 text-sm font-semibold leading-snug text-ink hover:text-brand sm:text-base" %>
+
+    <div class="mt-2 flex items-center justify-between gap-2">
+      <span class="font-display text-lg font-extrabold text-ink sm:text-xl"><%= money(product.price, currency: "KSh") %></span>
+
+      <% add_classes = "flex h-11 items-center gap-1.5 rounded-xl border-2 border-ink bg-white px-3 text-sm font-bold text-ink transition hover:bg-ink hover:text-white sm:px-4" %>
+      <% plus_icon = capture do %><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><% end %>
+
+      <% if product.respond_to?(:colors) && product.colors.present? && product.colors.any? %>
+        <%# Needs a colour choice first, so send the buyer to the product page %>
+        <%= link_to product, class: add_classes, aria: { label: "Choose options for #{product.name}" } do %>
+          <%= plus_icon %><span class="hidden sm:inline">Options</span>
+        <% end %>
+      <% else %>
+        <%= link_to product, class: add_classes, aria: { label: "View #{product.name}" } do %>
+          <%= plus_icon %><span class="hidden sm:inline">View</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</article>

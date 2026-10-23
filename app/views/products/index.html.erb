@@ -1,0 +1,90 @@
+<% heading = @category ? Product::CATEGORIES[@category] : "All products" %>
+<% content_for :title, "#{heading} · SellAfrica" %>
+
+<section class="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8" aria-labelledby="products-heading">
+
+  <%# Breadcrumb %>
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex items-center gap-2 text-zinc-600">
+      <li><%= link_to "Home", root_path, class: "hover:text-brand" %></li>
+      <li aria-hidden="true">/</li>
+      <% if @category %>
+        <li><%= link_to "All products", products_path, class: "hover:text-brand" %></li>
+        <li aria-hidden="true">/</li>
+      <% end %>
+      <li aria-current="page" class="font-semibold text-ink"><%= heading %></li>
+    </ol>
+  </nav>
+
+  <%# Heading + count %>
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 id="products-heading" class="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-5xl"><%= heading %></h1>
+      <p class="mt-1 text-sm text-zinc-600">
+        <%= pluralize(@total, "product") %><%= " for “#{@query}”" if @query.present? %>
+      </p>
+    </div>
+
+    <%# Search + sort (GET, so the URL can be shared) %>
+    <%= form_with url: products_path, method: :get, class: "flex w-full flex-wrap gap-2 sm:w-auto", data: { turbo_action: "advance" } do %>
+      <%= hidden_field_tag :category, @category if @category %>
+      <div class="flex h-12 min-w-0 flex-1 overflow-hidden rounded-2xl border-2 border-ink bg-white sm:w-72 sm:flex-none">
+        <%= label_tag :q, "Search products", class: "sr-only" %>
+        <%= search_field_tag :q, @query, placeholder: "Search products or sellers…",
+                             class: "min-w-0 flex-1 border-0 px-4 text-sm text-ink placeholder:text-zinc-500 focus:ring-0" %>
+        <button type="submit" aria-label="Search" class="flex w-12 items-center justify-center bg-brand text-white hover:bg-brand-dark">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+      </div>
+      <%= label_tag :sort, "Sort by", class: "sr-only" %>
+      <%= select_tag :sort, options_for_select(Product::SORTS.invert, @sort), onchange: "this.form.requestSubmit()",
+                     class: "h-12 rounded-2xl border-2 border-sand-200 bg-white pl-4 pr-10 text-sm font-semibold text-ink focus:border-ink focus:ring-0" %>
+    <% end %>
+  </div>
+
+  <%# Category chips %>
+  <nav aria-label="Filter by category" class="-mx-4 mb-8 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+    <% chip = "flex h-10 shrink-0 items-center rounded-full border-[1.5px] px-5 text-sm font-semibold" %>
+    <% on = "border-ink bg-ink text-white" %>
+    <% off = "border-sand-200 bg-white text-ink hover:border-ink" %>
+    <%= link_to "All", products_path(q: @query.presence, sort: (@sort unless @sort == "newest")),
+                class: "#{chip} #{@category ? off : on}", aria: { current: (@category ? nil : "page") } %>
+    <% Product::CATEGORIES.each do |slug, name| %>
+      <%= link_to name, products_path(category: slug, q: @query.presence, sort: (@sort unless @sort == "newest")),
+                  class: "#{chip} #{@category == slug ? on : off}", aria: { current: (@category == slug ? "page" : nil) } %>
+    <% end %>
+  </nav>
+
+  <% if @products.any? %>
+    <%# 2 per row on phones, 3 on tablets, 4 on desktop %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
+      <%= render partial: "products/card", collection: @products, as: :product %>
+    </div>
+
+    <% if @prev_page || @next_page %>
+      <nav aria-label="Pages" class="mt-12 flex items-center justify-center gap-3">
+        <% page_link = "flex h-12 items-center rounded-2xl border-2 border-ink bg-white px-6 text-sm font-bold text-ink hover:bg-ink hover:text-white" %>
+        <% if @prev_page %>
+          <%= link_to "← Previous", products_path(request.query_parameters.merge(page: @prev_page)), class: page_link %>
+        <% end %>
+        <span class="text-sm text-zinc-600">Page <%= @page %></span>
+        <% if @next_page %>
+          <%= link_to "Next →", products_path(request.query_parameters.merge(page: @next_page)), class: page_link %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="rounded-3xl border border-sand-200 bg-white px-6 py-14 text-center">
+      <p class="font-display text-2xl font-extrabold text-ink">Nothing here yet</p>
+      <p class="mt-2 text-zinc-600">
+        <%= @query.present? || @category ? "Try another search or category." : "Be the first to list a product on SellAfrica." %>
+      </p>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <% if @query.present? || @category %>
+          <%= link_to "See all products", products_path, class: "rounded-2xl bg-brand px-6 py-3 font-bold text-white hover:bg-brand-dark" %>
+        <% end %>
+        <%#= link_to "Open your shop", new_shop_path, class: "rounded-2xl border-2 border-ink bg-white px-6 py-3 font-bold text-ink hover:bg-ink hover:text-white" %>
+      </div>
+    </div>
+  <% end %>
+</section>

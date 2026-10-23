@@ -1,0 +1,133 @@
+<%# Product form, used by new and edit. Mobile: one column. Desktop: details left, price/stock/status right. %>
+<%= form_with model: product, class: "grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start" do |f| %>
+
+  <% if product.errors.any? %>
+    <div role="alert" class="rounded-2xl bg-[#FBE3E6] px-5 py-4 text-sm text-brand-dark lg:col-span-2">
+      <p class="font-bold">Please fix <%= pluralize(product.errors.count, "problem") %>:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# ── Left column ─────────────────────────────── %>
+  <div class="flex flex-col gap-6">
+
+    <%# Basics %>
+    <section class="rounded-3xl border border-sand-200 bg-white p-5 sm:p-6">
+      <h2 class="mb-4 text-lg font-black text-ink">Product details</h2>
+
+      <div class="flex flex-col gap-5">
+        <div>
+          <%= f.label :name, "Product name", class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <%= f.text_field :name, required: true, maxlength: 120, autofocus: product.new_record?,
+                           placeholder: "e.g. Maasai Shuka Throw Blanket",
+                           class: "w-full rounded-xl border-2 border-sand-200 px-4 py-3 text-ink placeholder:text-zinc-400 focus:border-ink focus:ring-0" %>
+        </div>
+
+        <div>
+          <%= f.label :category, "Category", class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <%= f.select :category, options_for_select(Product::CATEGORIES.invert, product.category),
+                       { prompt: "Select a category" },
+                       class: "w-full rounded-xl border-2 border-sand-200 bg-white px-4 py-3 text-ink focus:border-ink focus:ring-0" %>
+        </div>
+
+        <div>
+          <%= f.label :description, class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <%= f.text_area :description, rows: 6,
+                          placeholder: "What is it made of, who made it, size, how to care for it…",
+                          class: "w-full rounded-xl border-2 border-sand-200 px-4 py-3 text-ink placeholder:text-zinc-400 focus:border-ink focus:ring-0" %>
+          <p class="mt-1.5 text-xs text-zinc-600">Buyers trust listings that say where and how the product was made.</p>
+        </div>
+      </div>
+    </section>
+
+    <%# Photos %>
+    <section class="rounded-3xl border border-sand-200 bg-white p-5 sm:p-6" data-controller="image-preview">
+      <h2 class="text-lg font-black text-ink">Photos</h2>
+      <p class="mb-4 mt-1 text-sm text-zinc-600">The first photo is the one buyers see in search. Square photos look best.</p>
+
+      <% if product.persisted? && product.images.attached? %>
+        <p class="mb-2 text-sm font-bold text-ink">Current photos <span class="font-normal text-zinc-600">· tick to remove</span></p>
+        <div class="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-4">
+          <% product.images.each do |image| %>
+            <label class="group relative block aspect-square cursor-pointer overflow-hidden rounded-2xl border-2 border-sand-200 has-[:checked]:border-brand">
+              <%= image_tag image, alt: "", class: "size-full object-cover group-has-[:checked]:opacity-40" %>
+              <%= check_box_tag "remove_image_ids[]", image.id, false, id: "remove_image_#{image.id}",
+                                class: "absolute right-2 top-2 size-5 rounded border-sand-200 text-brand focus:ring-brand" %>
+              <span class="sr-only">Remove this photo</span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+
+      <label for="product_images"
+             class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-sand-200 bg-sand-50 px-4 py-8 text-center hover:border-ink">
+        <svg class="size-8 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="font-bold text-ink"><%= product.images.attached? ? "Add more photos" : "Add photos" %></span>
+        <span class="text-xs text-zinc-600">JPG, PNG or WebP · pick several at once</span>
+      </label>
+      <%= f.file_field :images, multiple: true, accept: "image/jpeg,image/png,image/webp", include_hidden: false,
+                       class: "sr-only", data: { image_preview_target: "input", action: "image-preview#show" } %>
+
+      <div data-image-preview-target="list" class="mt-4 grid grid-cols-3 gap-3 empty:hidden sm:grid-cols-4"></div>
+    </section>
+
+    <%# Options %>
+    <section class="rounded-3xl border border-sand-200 bg-white p-5 sm:p-6">
+      <h2 class="mb-4 text-lg font-black text-ink">Options</h2>
+      <%= f.label :color, "Colours", class: "mb-1.5 block text-sm font-bold text-ink" %>
+      <%= f.text_field :color, placeholder: "red, blue, black",
+                       class: "w-full rounded-xl border-2 border-sand-200 px-4 py-3 text-ink placeholder:text-zinc-400 focus:border-ink focus:ring-0" %>
+      <p class="mt-1.5 text-xs text-zinc-600">Separate with commas. Leave empty if the product comes in one colour.</p>
+    </section>
+  </div>
+
+  <%# ── Right column ────────────────────────────── %>
+  <div class="flex flex-col gap-6 lg:sticky lg:top-28">
+
+    <section class="rounded-3xl border border-sand-200 bg-white p-5 sm:p-6">
+      <h2 class="mb-4 text-lg font-black text-ink">Price &amp; stock</h2>
+
+      <div class="flex flex-col gap-5">
+        <div>
+          <%= f.label :price, "Price", class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <div class="flex overflow-hidden rounded-xl border-2 border-sand-200 focus-within:border-ink">
+            <span class="flex items-center bg-sand-100 px-4 text-sm font-bold text-ink">KSh</span>
+            <%= f.number_field :price, step: "0.01", min: "1", required: true, inputmode: "decimal", placeholder: "2450",
+                               class: "min-w-0 flex-1 border-0 px-4 py-3 text-ink focus:ring-0" %>
+          </div>
+          <p class="mt-1.5 text-xs text-zinc-600">
+            You receive <%#= number_to_percentage(100 - (current_user.shop&.percentage_charge || 0), strip_insignificant_zeros: true) %> of each sale, paid to your bank by Paystack.
+          </p>
+        </div>
+
+        <div>
+          <%= f.label :stock, "Quantity in stock", class: "mb-1.5 block text-sm font-bold text-ink" %>
+          <%= f.number_field :stock, min: "0", step: "1", required: true, inputmode: "numeric",
+                             class: "w-full rounded-xl border-2 border-sand-200 px-4 py-3 text-ink focus:border-ink focus:ring-0" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-3xl border border-sand-200 bg-white p-5 sm:p-6">
+      <label class="flex cursor-pointer items-start gap-3">
+        <%= f.check_box :active, class: "mt-0.5 size-5 rounded border-sand-200 text-brand focus:ring-brand" %>
+        <span>
+          <span class="block font-bold text-ink">Show in the store</span>
+          <span class="block text-sm text-zinc-600">Untick to save it as hidden.</span>
+        </span>
+      </label>
+    </section>
+
+    <div class="flex flex-col gap-2">
+      <%= f.submit product.new_record? ? "List product" : "Save changes",
+                   data: { turbo_submits_with: "Saving…" },
+                   class: "h-14 w-full cursor-pointer rounded-2xl bg-brand font-bold text-white transition hover:bg-brand-dark disabled:opacity-60" %>
+      <%#= link_to "Cancel", product.persisted? ? product_path(product) : shop_path,
+                  class: "py-2 text-center text-sm font-semibold text-zinc-600 hover:text-ink" %>
+    </div>
+  </div>
+<% end %>

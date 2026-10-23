@@ -5,61 +5,34 @@
     <h2 id="trending-heading" class="font-display text-2xl font-extrabold tracking-tight text-ink sm:text-4xl">
       Trending across Africa
     </h2>
-
     <nav aria-label="Filter products" class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-      <a href="?filter=all" aria-current="true"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-ink bg-ink px-5 text-sm font-semibold text-white">All</a>
-      <a href="?filter=fashion"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Fashion</a>
-      <a href="?filter=home-living"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Home</a>
-      <a href="?filter=beauty"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Beauty</a>
-      <a href="?filter=food-pantry"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Food</a>
-      <a href="?filter=art-crafts"
-         class="flex h-10 shrink-0 items-center rounded-full border-[1.5px] border-sand-200 bg-white px-5 text-sm font-semibold text-ink hover:border-ink">Crafts</a>
+      <% chip = "flex h-10 shrink-0 items-center rounded-full border-[1.5px] px-5 text-sm font-semibold" %>
+      <% on = "border-ink bg-ink text-white" %>
+      <% off = "border-sand-200 bg-white text-ink hover:border-ink" %>
+      <%= link_to "All", products_path(q: @query.presence, sort: (@sort unless @sort == "newest")),
+                  class: "#{chip} #{@category ? off : on}", aria: { current: (@category ? nil : "page") } %>
+      <% Product::CATEGORIES.each do |slug, name| %>
+        <%= link_to name, products_path(category: slug, q: @query.presence, sort: (@sort unless @sort == "newest")),
+                    class: "#{chip} #{@category == slug ? on : off}", aria: { current: (@category == slug ? "page" : nil) } %>
+      <% end %>
     </nav>
+
   </div>
 
   <!-- Product grid: 2 per row on phones, 3 on tablets, 4 on desktop -->
   <div class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
 
-    <!-- Card 1: with badge + shuka pattern -->
-    <article class="group flex flex-col gap-3">
-      <div class="relative transition-transform duration-200 group-hover:-translate-y-1">
-        <a href="/products/1" aria-label="Maasai Shuka Throw Blanket"
-           class="shuka block aspect-square overflow-hidden rounded-3xl"></a>
 
-        <span class="absolute left-3 top-3 rounded-lg bg-ink px-2.5 py-1 text-xs font-extrabold text-gold">Bestseller</span>
-
-        <button type="button" aria-label="Save Maasai Shuka Throw Blanket to wishlist" aria-pressed="false"
-                class="absolute right-3 top-3 flex size-11 items-center justify-center rounded-full bg-white text-ink shadow-md transition hover:text-brand">
-          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.3C1.7 7.5 3.8 4 7.3 4c2 0 3.6 1.1 4.7 2.7C13.1 5.1 14.7 4 16.7 4c3.5 0 5.6 3.5 4.5 6.7C19.5 15.4 12 20 12 20z"/></svg>
-        </button>
-      </div>
-
-      <div class="flex flex-col gap-1 px-0.5">
-        <span class="text-xs text-zinc-600 sm:text-[13px]">Narok Weavers · Kenya</span>
-        <a href="/products/1" class="line-clamp-2 text-sm font-semibold leading-snug text-ink hover:text-brand sm:text-base">
-          Maasai Shuka Throw Blanket
-        </a>
-        <div class="mt-2 flex items-center justify-between gap-2">
-          <span class="font-display text-lg font-extrabold text-ink sm:text-xl">KSh 2,450</span>
-          <button type="button" aria-label="Add Maasai Shuka Throw Blanket to cart"
-                  class="flex h-11 items-center gap-1.5 rounded-xl border-2 border-ink bg-white px-3 text-sm font-bold text-ink transition hover:bg-ink hover:text-white sm:px-4">
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-            <span class="hidden sm:inline">Add</span>
-          </button>
-        </div>
-      </div>
-    </article>
+    <% @product.each do |product| %>
 
     <!-- Card 2: plain colour, no badge -->
     <article class="group flex flex-col gap-3">
       <div class="relative transition-transform duration-200 group-hover:-translate-y-1">
-        <a href="/products/2" aria-label="Handwoven Sisal Kiondo Basket"
+        <a href="/products/<%= product.id %>" aria-label="Handwoven Sisal Kiondo Basket"
            class="block aspect-square overflow-hidden rounded-3xl bg-[#E6D3AE]">
+          <% if product.images.attached? %>
+            <%= image_tag product.images.first, class: "size-full object-cover" %>
+          <% end %>
           <!-- Real photo later: <img src="..." alt="" class="size-full object-cover"> -->
         </a>
 
@@ -71,11 +44,11 @@
 
       <div class="flex flex-col gap-1 px-0.5">
         <span class="text-xs text-zinc-600 sm:text-[13px]">Machakos Crafts · Kenya</span>
-        <a href="/products/2" class="line-clamp-2 text-sm font-semibold leading-snug text-ink hover:text-brand sm:text-base">
-          Handwoven Sisal Kiondo Basket
+        <a href="/products/<%= product.id %>" class="line-clamp-2 text-sm font-semibold leading-snug text-ink hover:text-brand sm:text-base">
+          <%= product.name %>
         </a>
         <div class="mt-2 flex items-center justify-between gap-2">
-          <span class="font-display text-lg font-extrabold text-ink sm:text-xl">KSh 1,800</span>
+          <span class="font-display text-lg font-extrabold text-ink sm:text-xl">KSh <%= product.price %></span>
           <button type="button" aria-label="Add Handwoven Sisal Kiondo Basket to cart"
                   class="flex h-11 items-center gap-1.5 rounded-xl border-2 border-ink bg-white px-3 text-sm font-bold text-ink transition hover:bg-ink hover:text-white sm:px-4">
             <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
@@ -84,9 +57,7 @@
         </div>
       </div>
     </article>
-
-    <!-- Repeat the card for the other products.
-         Colours from the screenshot: bg-[#F2C29B], bg-[#EFE5CF], bg-[#6B4632], shuka-blue, bg-gold, bg-[#E4D7CF] -->
+    <% end %>
 
   </div>
 </section>
