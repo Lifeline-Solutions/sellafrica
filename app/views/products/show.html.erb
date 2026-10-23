@@ -9,7 +9,7 @@
       <li aria-hidden="true">/</li>
       <li><a href="#" class="hover:text-brand">Throws &amp; blankets</a></li>
       <li aria-hidden="true">/</li>
-      <li aria-current="page" class="font-semibold text-ink">Maasai Shuka Throw Blanket</li>
+      <li aria-current="page" class="font-semibold text-ink"><%= @product.name %></li>
     </ol>
   </nav>
 
@@ -18,23 +18,42 @@
     <!-- ── Gallery ─────────────────────────────── -->
     <!-- Thumbnails beside the photo on desktop, below it on phones -->
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4">
-      <div class="flex gap-3 overflow-x-auto sm:flex-col" role="group" aria-label="Product photos">
-        <button type="button" data-action="product#show" data-product-index-param="0" data-product-target="thumb" aria-pressed="true"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-ink sm:size-22" aria-label="Photo 1"></button>
-        <button type="button" data-action="product#show" data-product-index-param="1" data-product-target="thumb" aria-pressed="false"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-transparent opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 2"></button>
-        <button type="button" data-action="product#show" data-product-index-param="2" data-product-target="thumb" aria-pressed="false"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-transparent opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 3"></button>
-        <button type="button" data-action="product#show" data-product-index-param="3" data-product-target="thumb" aria-pressed="false"
-                class="size-20 shrink-0 rounded-2xl border-[3px] border-transparent bg-[#E6D3AE] opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 4"></button>
-      </div>
+      <% if @product.images.attached? %>
+        <div class="flex gap-3 overflow-x-auto sm:flex-col" role="group" aria-label="Product photos">
+          <% @product.images.each_with_index do |image, index| %>
+            <button type="button"
+                    data-action="product#show"
+                    data-product-index-param="<%= index %>"
+                    data-product-target="thumb"
+                    data-product-image-url-param="<%= url_for(image) %>"
+                    aria-pressed="<%= index.zero? %>"
+                    class="size-20 shrink-0 overflow-hidden rounded-2xl border-[3px] sm:size-22 <%= index.zero? ? "border-ink" : "border-transparent opacity-70 hover:opacity-100" %>"
+                    aria-label="Photo <%= index + 1 %>">
+              <%= image_tag image,
+                            alt: "#{@product.name} photo #{index + 1}",
+                            class: "size-full object-cover" %>
+            </button>
+          <% end %>
+        </div>
 
-      <div class="shuka relative aspect-square flex-1 overflow-hidden rounded-[28px]" data-product-target="main">
-        <!-- Real photo later: <img src="..." alt="Maasai Shuka Throw Blanket, red" class="size-full object-cover"> -->
-        <span class="absolute left-4 top-4 rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-gold">Bestseller</span>
-      </div>
+        <div class="relative aspect-square flex-1 overflow-hidden rounded-[28px]" data-product-target="main">
+          <%= image_tag @product.images.first,
+                        alt: @product.name,
+                        class: "size-full object-cover",
+                        data: { product_target: "mainImage" } %>
+
+          <span class="absolute left-4 top-4 rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-gold">
+        Bestseller
+      </span>
+        </div>
+      <% else %>
+        <div class="shuka relative aspect-square flex-1 overflow-hidden rounded-[28px]">
+      <span class="absolute left-4 top-4 rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-gold">
+        Bestseller
+      </span>
+        </div>
+      <% end %>
     </div>
-
     <!-- ── Buy box ─────────────────────────────── -->
     <form action="/cart_items" method="post" class="flex flex-col gap-6 lg:sticky lg:top-28 lg:self-start">
       <input type="hidden" name="product_id" value="1">
@@ -46,7 +65,7 @@
           Narok Weavers · Verified seller · Kenya
         </a>
         <h1 class="font-display text-3xl font-black leading-[1.02] tracking-tight text-ink sm:text-5xl">
-          Maasai Shuka Throw Blanket
+          <%= @product.name %>
         </h1>
         <p class="text-base leading-relaxed text-zinc-600">
           Thick cotton-acrylic shuka, hand-finished in Narok. Use it as a throw, picnic blanket or wrap.
@@ -55,9 +74,7 @@
 
       <!-- Price -->
       <div class="flex flex-wrap items-baseline gap-3">
-        <span class="font-display text-4xl font-black text-brand">KSh 2,450</span>
-        <del class="text-base text-zinc-600">KSh 3,200</del>
-        <span class="rounded-lg bg-[#FBE3E6] px-2.5 py-1 text-xs font-bold text-brand-dark">Save 23%</span>
+        <span class="font-display text-4xl font-black text-brand">KSh: <%= @product.price %></span>
       </div>
 
       <!-- Colour: radio inputs styled as swatches -->
@@ -158,5 +175,5 @@
       </ul>
     </form>
   </div>
-  <%= render "product/other_prod" %>
+  <%= render "products/other_prod" %>
 </main>

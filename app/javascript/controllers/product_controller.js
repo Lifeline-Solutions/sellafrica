@@ -2,9 +2,9 @@ import { Controller } from '@hotwired/stimulus';
 
 // Thumbnail switching + quantity stepper on the product page
 export default class extends Controller {
-  static targets = ['thumb', 'main', 'quantity']
+  static targets = ['thumb', 'main', 'mainImage', 'quantity']
 
-  show({ params: { index } }) {
+  show({ params: { index, imageUrl } }) {
     this.thumbTargets.forEach((thumb, i) => {
       const active = i === index;
       thumb.setAttribute('aria-pressed', active);
@@ -12,10 +12,10 @@ export default class extends Controller {
       thumb.classList.toggle('border-transparent', !active);
       thumb.classList.toggle('opacity-70', !active);
     });
-    // Swap the big image: copy the thumb's background (or later, its <img> src)
-    const chosen = this.thumbTargets[index];
-    this.mainTarget.className = this.mainTarget.className.replace(/\b(shuka|bg-\[[^\]]+\])\b/g, '');
-    chosen.classList.forEach((c) => { if (c === 'shuka' || c.startsWith('bg-[')) this.mainTarget.classList.add(c); });
+
+    if (this.hasMainImageTarget && imageUrl) {
+      this.mainImageTarget.src = imageUrl;
+    }
   }
 
   increment() { this.#step(1); }
