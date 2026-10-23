@@ -1,5 +1,33 @@
 class ProductsController < ApplicationController
-  def index; end
+  def index
+    @category = params[:category].presence
+    @query = params[:q].presence
+    @sort = params[:sort].presence || 'newest'
+
+    scope = Product.all
+
+    scope = scope.where(product_type: @category) if @category.present? && Product::CATEGORIES.key?(@category) && Product.column_names.include?('product_type')
+
+    scope = scope.where('name ILIKE :q OR description ILIKE :q', q: "%#{@query}%") if @query.present?
+
+    scope = case @sort
+            when 'price_asc'
+              scope.order(Arel.sql('CAST(price AS numeric) ASC'))
+            when 'price_desc'
+              scope.order(Arel.sql('CAST(price AS numeric) DESC'))
+            when 'name_asc'
+              scope.order(name: :asc)
+            else
+              scope.order(created_at: :desc)
+            end
+
+    @total = scope.count
+    @page = [params[:page].to_i, 1].max
+    per_page = 12
+    @products = scope.offset((@page - 1) * per_page).limit(per_page)
+    @prev_page = @page > 1 ? @page - 1 : nil
+    @next_page = @total > @page * per_page ? @page + 1 : nil
+  end
 
   def new
     @product = Product.new
@@ -24,6 +52,9 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
+
+    @product.images.where(id: params[:remove_image_ids]).each(&:purge) if params[:remove_image_ids].present?
+
     if @product.update(product_params)
       redirect_to @product, notice: 'Product was successfully updated.'
     else
@@ -40,6 +71,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :description, :price, :product_type, images: [])
+    params.require(:product).permit(:name, :description, :price, :color, :product_type, :stock, :active, images: [])
   end
 end

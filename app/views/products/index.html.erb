@@ -1,162 +1,90 @@
-<main class="mx-auto max-w-7xl px-4 pb-16 pt-5 sm:px-6 lg:px-8">
+<% heading = @category ? Product::CATEGORIES[@category] : "All products" %>
+<% content_for :title, "#{heading} · SellAfrica" %>
 
-  <!-- Breadcrumb -->
-  <nav aria-label="Breadcrumb" class="mb-6 overflow-x-auto text-sm">
-    <ol class="flex items-center gap-2 whitespace-nowrap text-zinc-600">
-      <li><a href="/" class="hover:text-brand">Home</a></li>
+<section class="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8" aria-labelledby="products-heading">
+
+  <%# Breadcrumb %>
+  <nav aria-label="Breadcrumb" class="mb-4 text-sm">
+    <ol class="flex items-center gap-2 text-zinc-600">
+      <li><%= link_to "Home", root_path, class: "hover:text-brand" %></li>
       <li aria-hidden="true">/</li>
-      <li><a href="#" class="hover:text-brand">Home &amp; Living</a></li>
-      <li aria-hidden="true">/</li>
-      <li><a href="#" class="hover:text-brand">Throws &amp; blankets</a></li>
-      <li aria-hidden="true">/</li>
-      <li aria-current="page" class="font-semibold text-ink">Maasai Shuka Throw Blanket</li>
+      <% if @category %>
+        <li><%= link_to "All products", products_path, class: "hover:text-brand" %></li>
+        <li aria-hidden="true">/</li>
+      <% end %>
+      <li aria-current="page" class="font-semibold text-ink"><%= heading %></li>
     </ol>
   </nav>
 
-  <div class="grid gap-8 lg:grid-cols-2 lg:gap-14" data-controller="product">
-
-    <!-- ── Gallery ─────────────────────────────── -->
-    <!-- Thumbnails beside the photo on desktop, below it on phones -->
-    <div class="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4">
-      <div class="flex gap-3 overflow-x-auto sm:flex-col" role="group" aria-label="Product photos">
-        <button type="button" data-action="product#show" data-product-index-param="0" data-product-target="thumb" aria-pressed="true"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-ink sm:size-22" aria-label="Photo 1"></button>
-        <button type="button" data-action="product#show" data-product-index-param="1" data-product-target="thumb" aria-pressed="false"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-transparent opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 2"></button>
-        <button type="button" data-action="product#show" data-product-index-param="2" data-product-target="thumb" aria-pressed="false"
-                class="shuka size-20 shrink-0 rounded-2xl border-[3px] border-transparent opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 3"></button>
-        <button type="button" data-action="product#show" data-product-index-param="3" data-product-target="thumb" aria-pressed="false"
-                class="size-20 shrink-0 rounded-2xl border-[3px] border-transparent bg-[#E6D3AE] opacity-70 hover:opacity-100 sm:size-22" aria-label="Photo 4"></button>
-      </div>
-
-      <div class="shuka relative aspect-square flex-1 overflow-hidden rounded-[28px]" data-product-target="main">
-        <!-- Real photo later: <img src="..." alt="Maasai Shuka Throw Blanket, red" class="size-full object-cover"> -->
-        <span class="absolute left-4 top-4 rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-gold">Bestseller</span>
-      </div>
+  <%# Heading + count %>
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 id="products-heading" class="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-5xl"><%= heading %></h1>
+      <p class="mt-1 text-sm text-zinc-600">
+        <%= pluralize(@total, "product") %><%= " for “#{@query}”" if @query.present? %>
+      </p>
     </div>
 
-    <!-- ── Buy box ─────────────────────────────── -->
-    <form action="/cart_items" method="post" class="flex flex-col gap-6 lg:sticky lg:top-28 lg:self-start">
-      <input type="hidden" name="product_id" value="1">
-
-      <!-- Seller + title -->
-      <div class="flex flex-col gap-2.5">
-        <a href="#" class="inline-flex items-center gap-2 self-start text-sm font-semibold text-[#2E3A8C] hover:underline">
-          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
-          Narok Weavers · Verified seller · Kenya
-        </a>
-        <h1 class="font-display text-3xl font-black leading-[1.02] tracking-tight text-ink sm:text-5xl">
-          Maasai Shuka Throw Blanket
-        </h1>
-        <p class="text-base leading-relaxed text-zinc-600">
-          Thick cotton-acrylic shuka, hand-finished in Narok. Use it as a throw, picnic blanket or wrap.
-        </p>
-      </div>
-
-      <!-- Price -->
-      <div class="flex flex-wrap items-baseline gap-3">
-        <span class="font-display text-4xl font-black text-brand">KSh 2,450</span>
-        <del class="text-base text-zinc-600">KSh 3,200</del>
-        <span class="rounded-lg bg-[#FBE3E6] px-2.5 py-1 text-xs font-bold text-brand-dark">Save 23%</span>
-      </div>
-
-      <!-- Colour: radio inputs styled as swatches -->
-      <fieldset>
-        <legend class="mb-3 text-sm font-bold text-ink">Colour</legend>
-        <div class="flex gap-3">
-          <label class="cursor-pointer rounded-full border-[2.5px] border-sand-200 p-1 has-[:checked]:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand">
-            <input type="radio" name="colour" value="red" class="sr-only" checked>
-            <span class="shuka block size-10 rounded-full"></span>
-            <span class="sr-only">Classic red</span>
-          </label>
-          <label class="cursor-pointer rounded-full border-[2.5px] border-sand-200 p-1 has-[:checked]:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand">
-            <input type="radio" name="colour" value="blue" class="sr-only">
-            <span class="shuka-blue block size-10 rounded-full"></span>
-            <span class="sr-only">Royal blue</span>
-          </label>
-          <label class="cursor-pointer rounded-full border-[2.5px] border-sand-200 p-1 has-[:checked]:border-ink has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand">
-            <input type="radio" name="colour" value="black" class="sr-only">
-            <span class="block size-10 rounded-full bg-ink"></span>
-            <span class="sr-only">Night black</span>
-          </label>
-        </div>
-      </fieldset>
-
-      <!-- Size: radio inputs styled as pills, even 3-column grid -->
-      <fieldset>
-        <legend class="mb-3 text-sm font-bold text-ink">Size</legend>
-        <div class="grid grid-cols-3 gap-2.5">
-          <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-sand-200 bg-white px-2 text-center hover:border-ink has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white">
-            <input type="radio" name="size" value="single" class="sr-only">
-            <span class="text-sm font-bold">Single</span>
-            <span class="text-xs opacity-75">150×100 cm</span>
-          </label>
-          <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-sand-200 bg-white px-2 text-center hover:border-ink has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white">
-            <input type="radio" name="size" value="double" class="sr-only" checked>
-            <span class="text-sm font-bold">Double</span>
-            <span class="text-xs opacity-75">200×150 cm</span>
-          </label>
-          <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-sand-200 bg-white px-2 text-center hover:border-ink has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white">
-            <input type="radio" name="size" value="king" class="sr-only">
-            <span class="text-sm font-bold">King</span>
-            <span class="text-xs opacity-75">240×180 cm</span>
-          </label>
-        </div>
-      </fieldset>
-
-      <!-- Quantity + Add to cart + Wishlist -->
-      <div class="flex flex-col gap-3">
-        <div class="flex gap-3">
-          <div class="flex h-14 items-center rounded-2xl border-2 border-ink bg-white">
-            <button type="button" data-action="product#decrement" aria-label="Decrease quantity" class="h-full w-11 text-xl text-ink">−</button>
-            <label for="quantity" class="sr-only">Quantity</label>
-            <input id="quantity" name="quantity" type="number" min="1" max="20" value="1" data-product-target="quantity"
-                   class="w-10 border-0 bg-transparent p-0 text-center font-bold text-ink [appearance:textfield] focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none">
-            <button type="button" data-action="product#increment" aria-label="Increase quantity" class="h-full w-11 text-xl text-ink">+</button>
-          </div>
-
-          <button type="submit" class="h-14 flex-1 rounded-2xl bg-brand font-bold text-white transition hover:bg-brand-dark">
-            Add to cart
-          </button>
-
-          <button type="button" aria-label="Save to wishlist" aria-pressed="false"
-                  class="flex size-14 shrink-0 items-center justify-center rounded-2xl border-2 border-ink bg-white text-ink hover:text-brand">
-            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.3C1.7 7.5 3.8 4 7.3 4c2 0 3.6 1.1 4.7 2.7C13.1 5.1 14.7 4 16.7 4c3.5 0 5.6 3.5 4.5 6.7C19.5 15.4 12 20 12 20z"/></svg>
-          </button>
-        </div>
-
-        <button type="submit" name="buy_now" value="1"
-                class="flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-ink font-bold text-white transition hover:bg-black">
-          <svg class="size-5 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
-          Buy now with M-Pesa
+    <%# Search + sort (GET, so the URL can be shared) %>
+    <%= form_with url: products_path, method: :get, class: "flex w-full flex-wrap gap-2 sm:w-auto", data: { turbo_action: "advance" } do %>
+      <%= hidden_field_tag :category, @category if @category %>
+      <div class="flex h-12 min-w-0 flex-1 overflow-hidden rounded-2xl border-2 border-ink bg-white sm:w-72 sm:flex-none">
+        <%= label_tag :q, "Search products", class: "sr-only" %>
+        <%= search_field_tag :q, @query, placeholder: "Search products or sellers…",
+                             class: "min-w-0 flex-1 border-0 px-4 text-sm text-ink placeholder:text-zinc-500 focus:ring-0" %>
+        <button type="submit" aria-label="Search" class="flex w-12 items-center justify-center bg-brand text-white hover:bg-brand-dark">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         </button>
       </div>
-
-      <!-- Delivery info -->
-      <ul class="flex flex-col gap-4 rounded-3xl border border-sand-200 bg-white p-5">
-        <li class="flex gap-3.5">
-          <svg class="mt-0.5 size-6 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
-          <div>
-            <p class="font-bold text-ink">Delivery to <button type="button" class="underline hover:text-brand">Nairobi, Westlands</button></p>
-            <p class="mt-0.5 text-sm text-zinc-600">Arrives [delivery date] · Order within the next [hours]</p>
-          </div>
-        </li>
-        <li class="flex gap-3.5">
-          <svg class="mt-0.5 size-6 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-          <div>
-            <p class="font-bold text-ink">Pick-up point</p>
-            <p class="mt-0.5 text-sm text-zinc-600">Collect from a SellAfrica pick-up point near you.</p>
-          </div>
-        </li>
-        <li class="flex gap-3.5">
-          <svg class="mt-0.5 size-6 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg>
-          <div>
-            <p class="font-bold text-ink">Easy returns</p>
-            <p class="mt-0.5 text-sm text-zinc-600">Return within [X] days for a full refund.</p>
-          </div>
-        </li>
-      </ul>
-    </form>
+      <%= label_tag :sort, "Sort by", class: "sr-only" %>
+      <%= select_tag :sort, options_for_select(Product::SORTS.invert, @sort), onchange: "this.form.requestSubmit()",
+                     class: "h-12 rounded-2xl border-2 border-sand-200 bg-white pl-4 pr-10 text-sm font-semibold text-ink focus:border-ink focus:ring-0" %>
+    <% end %>
   </div>
-  <%= render "products/other_prod" %>
-</main>
+
+  <%# Category chips %>
+  <nav aria-label="Filter by category" class="-mx-4 mb-8 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+    <% chip = "flex h-10 shrink-0 items-center rounded-full border-[1.5px] px-5 text-sm font-semibold" %>
+    <% on = "border-ink bg-ink text-white" %>
+    <% off = "border-sand-200 bg-white text-ink hover:border-ink" %>
+    <%= link_to "All", products_path(q: @query.presence, sort: (@sort unless @sort == "newest")),
+                class: "#{chip} #{@category ? off : on}", aria: { current: (@category ? nil : "page") } %>
+    <% Product::CATEGORIES.each do |slug, name| %>
+      <%= link_to name, products_path(category: slug, q: @query.presence, sort: (@sort unless @sort == "newest")),
+                  class: "#{chip} #{@category == slug ? on : off}", aria: { current: (@category == slug ? "page" : nil) } %>
+    <% end %>
+  </nav>
+
+  <% if @products.any? %>
+    <%# 2 per row on phones, 3 on tablets, 4 on desktop %>
+    <div class="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
+      <%= render partial: "products/card", collection: @products, as: :product %>
+    </div>
+
+    <% if @prev_page || @next_page %>
+      <nav aria-label="Pages" class="mt-12 flex items-center justify-center gap-3">
+        <% page_link = "flex h-12 items-center rounded-2xl border-2 border-ink bg-white px-6 text-sm font-bold text-ink hover:bg-ink hover:text-white" %>
+        <% if @prev_page %>
+          <%= link_to "← Previous", products_path(request.query_parameters.merge(page: @prev_page)), class: page_link %>
+        <% end %>
+        <span class="text-sm text-zinc-600">Page <%= @page %></span>
+        <% if @next_page %>
+          <%= link_to "Next →", products_path(request.query_parameters.merge(page: @next_page)), class: page_link %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="rounded-3xl border border-sand-200 bg-white px-6 py-14 text-center">
+      <p class="font-display text-2xl font-extrabold text-ink">Nothing here yet</p>
+      <p class="mt-2 text-zinc-600">
+        <%= @query.present? || @category ? "Try another search or category." : "Be the first to list a product on SellAfrica." %>
+      </p>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <% if @query.present? || @category %>
+          <%= link_to "See all products", products_path, class: "rounded-2xl bg-brand px-6 py-3 font-bold text-white hover:bg-brand-dark" %>
+        <% end %>
+        <%#= link_to "Open your shop", new_shop_path, class: "rounded-2xl border-2 border-ink bg-white px-6 py-3 font-bold text-ink hover:bg-ink hover:text-white" %>
+      </div>
+    </div>
+  <% end %>
+</section>
