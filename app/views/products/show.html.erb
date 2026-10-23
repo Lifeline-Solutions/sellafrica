@@ -3,11 +3,12 @@
   <!-- Breadcrumb -->
   <nav aria-label="Breadcrumb" class="mb-6 overflow-x-auto text-sm">
     <ol class="flex items-center gap-2 whitespace-nowrap text-zinc-600">
-      <li><a href="/" class="hover:text-brand">Home</a></li>
+      <li class="hover:text-brand">
+        <%= link_to 'Home', root_path %></li>
       <li aria-hidden="true">/</li>
-      <li><a href="#" class="hover:text-brand">Home &amp; Living</a></li>
-      <li aria-hidden="true">/</li>
-      <li><a href="#" class="hover:text-brand">Throws &amp; blankets</a></li>
+      <li class="hover:text-brand capitalize">
+        <%= link_to @product.category_name, products_path(category: @product.category) %>
+      </li>
       <li aria-hidden="true">/</li>
       <li aria-current="page" class="font-semibold text-ink"><%= @product.name %></li>
     </ol>

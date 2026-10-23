@@ -28,7 +28,7 @@
       <% end %>
 
       <%# Desktop search %>
-      <%= form_with url: home_index_path, method: :get, local: true, role: "search",
+      <%= form_with url: products_path, method: :get, local: true, role: "search",
                     class: "hidden flex-1 overflow-hidden rounded-2xl border-2 border-ink bg-white md:flex h-12" do |f| %>
         <%= f.label :category, "Category", class: "sr-only" %>
         <%= f.select :category,
@@ -104,7 +104,7 @@
     <nav aria-label="Categories" class="mx-auto hidden max-w-7xl gap-x-7 px-8 pb-3 text-sm font-semibold lg:flex">
       <%= link_to "Today's deals", "#", class: "text-brand hover:underline" %>
       <% navbar_categories.each do |c| %>
-        <%= link_to c[:name], home_index_path(category: c[:slug]),
+        <%= link_to c[:name], products_path(category: c[:slug]),
                     class: [
                       "hover:text-brand",
                       params[:category] == c[:slug] ? "text-brand" : "text-zinc-700"
@@ -142,7 +142,7 @@
       <ul class="px-2">
         <li><%= link_to "Today's deals", "#", class: "flex min-h-11 items-center rounded-lg px-3 font-semibold text-brand hover:bg-sand-100" %></li>
         <% navbar_categories.each do |c| %>
-          <li><%= link_to c[:name], home_index_path(category: c[:slug]), class: "flex min-h-11 items-center rounded-lg px-3 font-medium text-ink hover:bg-sand-100" %></li>
+          <li><%= link_to c[:name], products_path(category: c[:slug]), class: "flex min-h-11 items-center rounded-lg px-3 font-medium text-ink hover:bg-sand-100" %></li>
         <% end %>
         <li><%= link_to "Shop by country", "#", class: "flex min-h-11 items-center rounded-lg px-3 font-medium text-ink hover:bg-sand-100" %></li>
       </ul>
