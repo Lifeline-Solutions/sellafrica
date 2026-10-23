@@ -1,0 +1,161 @@
+<%# SellAfrica navbar. Render it from the layout with: render "shared/navbar" %>
+<header data-controller="navbar" data-action="keydown.esc@window->navbar#closeAll click@window->navbar#clickOutside" class="sticky top-0 z-50 bg-white">
+
+  <%# ── Promo bar ─────────────────────────────────────────── %>
+  <div class="bg-ink px-4 py-2 text-center text-[13px] text-white">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-7 gap-y-1">
+      <span>Free delivery on orders over <strong class="text-gold">[KSh amount]</strong></span>
+      <span class="hidden text-zinc-300 sm:inline">Pay with M-Pesa, Airtel Money, card or cash on delivery</span>
+      <%= link_to "Sell on SellAfrica →", new_seller_path_or_fallback, class: "font-semibold text-gold hover:underline" %>
+    </div>
+  </div>
+
+  <%# ── Main row ──────────────────────────────────────────── %>
+  <div class="border-b border-sand-200">
+    <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:gap-7 lg:px-8">
+
+      <%# Mobile menu button %>
+      <button type="button"
+              class="-ml-2 inline-flex size-11 items-center justify-center rounded-xl text-ink hover:bg-sand-100 lg:hidden"
+              aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu"
+              data-navbar-target="menuButton" data-action="navbar#toggleMenu">
+        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <%# Logo %>
+      <%= link_to root_path, class: "shrink-0", aria: { label: "SellAfrica home" } do %>
+        <%= image_tag "sellafrica-logo-primary.png", alt: "SellAfrica", class: "h-9 w-auto sm:h-10" %>
+      <% end %>
+
+      <%# Desktop search %>
+      <%= form_with url: home_index_path, method: :get, local: true, role: "search",
+                    class: "hidden flex-1 overflow-hidden rounded-2xl border-2 border-ink bg-white md:flex h-12" do |f| %>
+        <%= f.label :category, "Category", class: "sr-only" %>
+        <%= f.select :category,
+                     options_for_select([["All categories", ""]] + navbar_categories.map { |c| [c[:name], c[:slug]] }, params[:category]),
+                     {}, class: "border-0 border-r border-sand-200 bg-sand-100 pl-4 pr-8 text-sm font-semibold text-ink focus:ring-0" %>
+        <%= f.label :q, "Search SellAfrica", class: "sr-only" %>
+        <%= f.search_field :q, value: params[:q], placeholder: "Search shukas, kiondos, coffee, sellers…",
+                           class: "min-w-0 flex-1 border-0 px-4 text-[15px] text-ink placeholder:text-zinc-500 focus:ring-0" %>
+        <button type="submit" aria-label="Search" class="flex w-14 items-center justify-center bg-brand text-white hover:bg-brand-dark">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+      <% end %>
+
+      <%# Right-side actions %>
+      <nav aria-label="Account" class="ml-auto flex items-center gap-1 md:ml-0">
+
+        <%# Account dropdown %>
+        <div class="relative">
+          <button type="button"
+                  class="flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-ink hover:bg-sand-100"
+                  aria-haspopup="true" aria-expanded="false" aria-label="Account menu"
+                  data-navbar-target="accountButton" data-action="navbar#toggleAccount">
+            <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+            <span class="hidden lg:inline"><%= navbar_signed_in? ? "Hi, #{navbar_user_first_name}" : "Sign in" %></span>
+          </button>
+          <div data-navbar-target="accountMenu"
+               class="absolute right-0 top-full mt-2 hidden w-60 rounded-2xl border border-sand-200 bg-white p-2 shadow-xl">
+            <% if navbar_signed_in? %>
+              <%= link_to "My orders", "#", class: "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-sand-100" %>
+              <%= link_to "Wishlist", "#", class: "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-sand-100" %>
+              <%= link_to "My shop", "#", class: "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-sand-100" %>
+              <%= link_to "Account settings", "#", class: "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-sand-100" %>
+              <div class="my-1 border-t border-sand-200"></div>
+              <%= button_to "Sign out", navbar_sign_out_path, method: :delete,
+                            class: "w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-brand hover:bg-sand-100" %>
+            <% else %>
+              <%= link_to "Sign in", navbar_sign_in_path, class: "block rounded-xl bg-ink px-3 py-3 text-center text-sm font-bold text-white hover:bg-black" %>
+              <%= link_to "Create an account", navbar_sign_up_path, class: "mt-1 block rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-ink hover:bg-sand-100" %>
+              <div class="my-1 border-t border-sand-200"></div>
+              <%= link_to "Track my order", "#", class: "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink hover:bg-sand-100" %>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Wishlist %>
+        <%= link_to "#", class: "hidden size-11 items-center justify-center rounded-xl text-ink hover:bg-sand-100 sm:flex", aria: { label: "Wishlist" } do %>
+          <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.3C1.7 7.5 3.8 4 7.3 4c2 0 3.6 1.1 4.7 2.7C13.1 5.1 14.7 4 16.7 4c3.5 0 5.6 3.5 4.5 6.7C19.5 15.4 12 20 12 20z"/></svg>
+        <% end %>
+
+        <%# Cart — wrap in a turbo frame / turbo_stream target so the count updates live %>
+        <%= link_to navbar_cart_path, id: "navbar_cart",
+                    class: "relative flex h-11 items-center gap-2 rounded-xl bg-ink px-3 text-sm font-semibold text-white hover:bg-black sm:px-4",
+                    aria: { label: "Cart, #{navbar_cart_count} items" } do %>
+          <svg class="size-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+          <span class="hidden sm:inline">Cart</span>
+          <span class="inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-gold px-1.5 text-xs font-bold text-ink"><%= navbar_cart_count %></span>
+        <% end %>
+      </nav>
+    </div>
+
+    <%# Mobile search %>
+    <div class="px-4 pb-3 md:hidden">
+      <%= form_with url: home_index_path, method: :get, local: true, role: "search",
+                    class: "flex h-12 items-center gap-2 rounded-2xl bg-sand-100 px-4" do |f| %>
+        <svg class="size-5 shrink-0 text-zinc-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <%= f.label :q, "Search SellAfrica", class: "sr-only", for: "mobile_q" %>
+        <%= f.search_field :q, id: "mobile_q", value: params[:q], placeholder: "Search products and sellers",
+                           class: "min-w-0 flex-1 border-0 bg-transparent px-0 text-[15px] text-ink placeholder:text-zinc-500 focus:ring-0" %>
+      <% end %>
+    </div>
+
+    <%# Desktop category row %>
+    <nav aria-label="Categories" class="mx-auto hidden max-w-7xl gap-x-7 px-8 pb-3 text-sm font-semibold lg:flex">
+      <%= link_to "Today's deals", "#", class: "text-brand hover:underline" %>
+      <% navbar_categories.each do |c| %>
+        <%= link_to c[:name], home_index_path(category: c[:slug]),
+                    class: [
+                      "hover:text-brand",
+                      params[:category] == c[:slug] ? "text-brand" : "text-zinc-700"
+                    ].join(" "),
+                    aria: { current: (params[:category] == c[:slug] ? "page" : nil) } %>
+      <% end %>
+      <%= link_to "Shop by country", "#", class: "text-zinc-700 hover:text-brand" %>
+    </nav>
+  </div>
+
+  <%# ── Mobile drawer ────────────────────────────────────── %>
+  <div id="mobile-menu" data-navbar-target="menu" class="hidden lg:hidden">
+    <div class="fixed inset-0 z-40 bg-ink/50" data-action="click->navbar#closeAll" aria-hidden="true"></div>
+    <nav aria-label="Mobile" class="fixed inset-y-0 left-0 z-50 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-sand-200 px-4 py-3">
+        <%= image_tag "sellafrica-logo-primary.png", alt: "SellAfrica", class: "h-8 w-auto" %>
+        <button type="button" aria-label="Close menu" data-action="navbar#closeAll"
+                class="inline-flex size-11 items-center justify-center rounded-xl hover:bg-sand-100">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="p-4">
+        <% if navbar_signed_in? %>
+          <p class="font-display text-lg font-extrabold text-ink">Hi, <%= navbar_user_first_name %></p>
+        <% else %>
+          <div class="grid grid-cols-2 gap-2">
+            <%= link_to "Sign in", navbar_sign_in_path, class: "rounded-xl bg-ink py-3 text-center text-sm font-bold text-white" %>
+            <%= link_to "Join", navbar_sign_up_path, class: "rounded-xl border-2 border-ink py-2.5 text-center text-sm font-bold text-ink" %>
+          </div>
+        <% end %>
+      </div>
+
+      <p class="px-4 pb-1 text-xs font-bold uppercase tracking-wider text-zinc-600">Shop</p>
+      <ul class="px-2">
+        <li><%= link_to "Today's deals", "#", class: "flex min-h-11 items-center rounded-lg px-3 font-semibold text-brand hover:bg-sand-100" %></li>
+        <% navbar_categories.each do |c| %>
+          <li><%= link_to c[:name], home_index_path(category: c[:slug]), class: "flex min-h-11 items-center rounded-lg px-3 font-medium text-ink hover:bg-sand-100" %></li>
+        <% end %>
+        <li><%= link_to "Shop by country", "#", class: "flex min-h-11 items-center rounded-lg px-3 font-medium text-ink hover:bg-sand-100" %></li>
+      </ul>
+
+      <div class="mt-auto p-4">
+        <%= link_to new_seller_path_or_fallback, class: "flex items-center justify-between rounded-2xl bg-brand p-4 text-white" do %>
+          <span>
+            <span class="block font-display text-lg font-black leading-tight">Sell on SellAfrica</span>
+            <span class="text-sm text-red-50">Open a shop from your phone</span>
+          </span>
+          <span aria-hidden="true" class="text-xl">→</span>
+        <% end %>
+      </div>
+    </nav>
+  </div>
+</header>
